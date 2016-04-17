@@ -1,6 +1,6 @@
 ## stream
 
-Streaming data library build around making stream fusion a first-class concept.
+Streaming data library built around making stream fusion a first-class concept.
 Focus is on high performance and usability.
 
 Unlike more commonly used streaming libraries (like conduit, enumerator, or
