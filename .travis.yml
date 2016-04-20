@@ -164,6 +164,7 @@ script:
       for dir in $PACKAGES
       do
         cd $dir
+        cabal test
         cabal check || [ "$CABALVER" == "1.16" ]
         cabal sdist
         SRC_TGZ=$(cabal info . | awk '{print $2;exit}').tar.gz && \
