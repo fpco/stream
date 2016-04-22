@@ -18,6 +18,7 @@ library
   exposed-modules:     Stream
                        Stream.Core
                        Stream.Core.Internal
+                       Sink
   build-depends:       base >= 4.8 && < 5
                      , bytestring
                      , exceptions

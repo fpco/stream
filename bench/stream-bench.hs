@@ -2,6 +2,7 @@
 {-# LANGUAGE MagicHash #-}
 import Criterion.Main
 import Stream
+import Sink
 import qualified Data.Vector as VB
 import qualified Data.Vector.Unboxed as VU
 import GHC.Prim
@@ -27,7 +28,9 @@ main = withTempFP "src" $ \srcFP -> withTempFP "dst" $ \dstFP -> do
               go name f = bench name $ whnf f high
               {-# INLINE go #-}
            in bgroup "enum/map/sum"
-            [ go "stream" $ runIdentity . sumS . mapS (+ 1) . enumFromToS 1
+            [ go "sink" $ \high' ->
+                runIdentity $ enumFromToSi 1 high' $ mapSi (+ 1) sumSi
+            , go "stream" $ runIdentity . sumS . mapS (+ 1) . enumFromToS 1
             , go "prim" $ \(I# high') ->
                 let loop x total =
                         case x +# 1# of
@@ -51,7 +54,8 @@ main = withTempFP "src" $ \srcFP -> withTempFP "dst" $ \dstFP -> do
             , go "unboxed vector" $ VU.sum . VU.map (+ 1) . VU.enumFromTo 1
             ]
         , bgroup "file copy"
-            [ bench "stream" $ whnfIO $ writeFileS dstFP $ readFileS srcFP
+            [ bench "sink" $ whnfIO $ readFileSi srcFP $ writeFileSi dstFP
+            , bench "stream" $ whnfIO $ writeFileS dstFP $ readFileS srcFP
             , bench "lazy I/O" $ whnfIO $ L.readFile srcFP >>= L.writeFile dstFP
             , bench "low level" $ whnfIO $
                 IO.withBinaryFile srcFP IO.ReadMode $ \src ->
